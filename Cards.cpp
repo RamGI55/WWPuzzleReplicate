@@ -16,7 +16,8 @@
 namespace Puzzle
 {
     Puzzle::Cards::Cards(HWND hwnd, int index, Colour type, int x, int y, bool isEmpty):
-        mHwnd(hwnd), mIndex(index), mColour(type), mX(x), mY(y), isFront(false), mIsEmpty(isEmpty)
+        mHwnd(hwnd), mIndex(index), mColour(type), mX(x), mY(y), isFront(false), mIsEmpty(isEmpty),
+        mWidth(150), mHeight(150), isSaved(false)
     {
 
         // initialise the status of the card. type, x, y and front status.
@@ -49,8 +50,7 @@ namespace Puzzle
     {
         /*if (x >= mX && y >= mY && static_cast <UINT>(x) <=mX + mFront ->GetWidth() &&
             static_cast<UINT>(y) <=mY + mFront ->GetHeight())*/ // this if sentence is no longer needed if you use Rect.
-
-        Gdiplus::Rect rct (mX, mY, mBoxes->GetWidth(), mBoxes->GetHeight()); // Rect function can verify the area of the windows.
+        Gdiplus::Rect rct (mX, mY, mWidth, mHeight); // Rect function can verify the area of the windows.
         if (rct.Contains(x, y))
         {
             if (mIsEmpty)
@@ -67,8 +67,11 @@ namespace Puzzle
     // must required for redrawing the boxes.
     void Puzzle::Cards::Draw(Gdiplus::Graphics& graphics)
     {
-        Gdiplus::Rect rect (mX, mY, mWidth, mHeight);
-        graphics.FillRectangle(mBrush.get(), rect);
+        if (mBrush) {
+            Gdiplus::Rect rect (mX, mY, mWidth, mHeight);
+            graphics.FillRectangle(mBrush.get(), rect);
+        }
+
     }
 
     void Cards::Invalidate()

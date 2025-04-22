@@ -72,7 +72,7 @@ namespace Puzzle
                     break;
                 }
             }
-            if (ClickedRow =! -1)
+            if (ClickedRow != -1)
                 break;
         }
        if (ClickedRow == -1 || _mClickCount <= 0 || mDeck[ClickedRow][ClickedCol].IsEmpty())
@@ -147,7 +147,7 @@ namespace Puzzle
                 }
             }
         }
-        return false;
+        return true;
     }
 
     void GameLogic::Reset()
@@ -234,7 +234,7 @@ namespace Puzzle
             {{0,0}, {0,1}, {1,1}, {1,2}}
         };
 
-        int numShapesToPlace = 10; // how much of the block you'd like to place in the map?
+        int numShapesToPlace = 6; // how much of the block you'd like to place in the map?
         for (int i = 0 ; i < numShapesToPlace; i++)
         {
             int ShapeIndex = rng()% tetrisShapes.size();

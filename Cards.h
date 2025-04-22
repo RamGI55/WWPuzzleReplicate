@@ -5,7 +5,6 @@
 #ifndef CARDS_H
 #define CARDS_H
 
-
 #pragma once
 
 #include <Windows.h>

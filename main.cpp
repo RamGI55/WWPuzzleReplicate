@@ -1,4 +1,12 @@
 
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
 #include <Windows.h>
 #include <complex>
 #include <sstream>
@@ -15,14 +23,22 @@ const wchar_t gClassName[]= L"MyWindowsClass";
 LRESULT CALLBACK WindowProc(
     HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 Puzzle::GameLogic gLogic;
+
+void DebugMessage(const wchar_t* message) {
+
+}
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
 
-    Gdiplus::GdiplusStartup (&gdiplusToken, &gdiplusStartupInput, nullptr);
+    Gdiplus::Status gdiStatus = Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
+    if (gdiStatus != Gdiplus::Ok) {
+        MessageBox(NULL, L"Failed to Initialise GDI+", L"Error", MB_OK);
+        return 1;
+    }
 
-
+    DebugMessage (L"GDI+ initialised");
     HWND hWnd;
     WNDCLASSEX wc;
 
@@ -32,7 +48,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     // initialising the windows.
     wc.style = CS_HREDRAW | CS_VREDRAW; // redraw when the window is moved.
-    wc.lpszClassName = reinterpret_cast<LPCSTR>(gClassName);
+    wc.lpszClassName = gClassName;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor (NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
@@ -43,7 +59,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     {
         // if windows has been failed to be loaded, send the error message
         MessageBox (
-            nullptr, reinterpret_cast<LPCSTR>(L"Failed to register the window class.\n"),reinterpret_cast<LPCSTR>(L"Error"),
+            nullptr, L"Failed to register the window class.\n",L"Error",
             MB_ICONEXCLAMATION | MB_OK
     );
         return 0;
@@ -54,13 +70,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     // Generate the windows
     hWnd = CreateWindowEx(
         WS_EX_COMPOSITED,
-        reinterpret_cast<LPCSTR>(gClassName),
-        reinterpret_cast<LPCSTR>(L"Wuthering Waves Puzzle"),
+        gClassName,
+        L"Wuthering Waves Puzzle",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        1920,
-        1080,
+        1250,
+        950,
         NULL,
         NULL,
         hInstance,
@@ -68,15 +84,24 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     if (hWnd == nullptr)
     {
+        DWORD error = GetLastError();
+        wchar_t errorW[256];
+        swprintf_s(errorW, 256, L"Failed to create window class.\nError: %ls", errorW);
         MessageBox (
-            nullptr, reinterpret_cast<LPCSTR>(L"Failed to create the window class.\n"),reinterpret_cast<LPCSTR>(L"Error"),
+            nullptr, L"Failed to create the window class.\n",L"Error",
             MB_ICONEXCLAMATION | MB_OK
             );
+        Gdiplus::GdiplusShutdown(gdiplusToken);
         return 0;
     }
+    DebugMessage(L"Window Created");
+
     gLogic.Init(hWnd);
+    DebugMessage(L"Initialized");
+
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
+    DebugMessage(L"Window Updated");
 
     // message handles
     MSG msg;
@@ -88,7 +113,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     gLogic.Release();
     Gdiplus::GdiplusShutdown(gdiplusToken);
-    return 0;
+    return (int)msg.wParam;
 }
 
 // get the text with the font in the window.
@@ -99,6 +124,8 @@ void OnPaint (HWND hwnd)
     hdc = BeginPaint(hwnd, &ps);
 
     Gdiplus::Graphics graphics (hdc);
+    graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    graphics.Clear(Gdiplus::Color(255, 240, 240, 240));
     gLogic.Draw(graphics);
 
     EndPaint(hwnd, &ps);
