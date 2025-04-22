@@ -8,6 +8,7 @@
 #include "Cards.h"
 #include <list>
 #include <memory>
+#include <vector>
 
 namespace Puzzle
 {
@@ -18,12 +19,18 @@ namespace Puzzle
         void Release();
         void Draw(Gdiplus::Graphics& graphics);
         void OnClick(int x, int y);
+        bool CheckVictory();
+        void Reset();
+
+        std::vector<std::pair<int,int>> FindconnectedTiles(int row, int col, Colour TargetColour);
         // card area - 885.f x 60.f x 120.f x 30.f
 
         // 8 x 5 grid of cards
         static const int BOARD_ROWS = 8;
         static const int BOARD_COLS = 8;
         const Gdiplus::RectF mCountRect { 1250.f, 60.f, 120.f,122.f};
+
+        static Colour mSavedColour;
 
     private:
         // std::unique_ptr<Gdiplus::Image> mBackground;
@@ -35,13 +42,12 @@ namespace Puzzle
         int _mClickCount{};
         Cards* mpSelectedCard{};
 
+
     private:
         void CreateCard();
 
 
     };
 }
-
-
 
 #endif //GAMELOGIC_H

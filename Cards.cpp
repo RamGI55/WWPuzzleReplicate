@@ -11,38 +11,37 @@
 #include "Cards.h"
 #include <string>
 
+#include "GameLogic.h"
+
 namespace Puzzle
 {
-    Puzzle::Cards::Cards(HWND hwnd, int index, Colour type, int x, int y):
-    mHwnd(hwnd), mIndex(index), mColour(type), mX (x), mY (y), isFront (false)
+    Puzzle::Cards::Cards(HWND hwnd, int index, Colour type, int x, int y, bool isEmpty):
+        mHwnd(hwnd), mIndex(index), mColour(type), mX(x), mY(y), isFront(false), mIsEmpty(isEmpty)
     {
         // initialise the status of the card. type, x, y and front status.
-        std::wstring filename;
-            // Switch the boxes based on the box colour
+        if (mIsEmpty)
+        {
+            mBrush = Gdiplus::SolidBrush(Gdiplus::Color(255, 128, 128, 128));
+        }
+        // Switch the boxes based on the box colour
         switch (mColour)
         {
         case Colour::Yellow:
-            filename = L"404Andoris.png";
+            mBrush = Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 255, 0)); // should be the file?
             break;
 
         case Colour::Red:
-            filename = L"404Belka.png";
+            mBrush = Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 0, 0));
             break;
 
         case Colour::Blue:
-            filename = L"404Klukai.png";
+            mBrush = Gdiplus::SolidBrush(Gdiplus::Color(255, 0, 0,255));
             break;
 
         case Colour::Green:
-            filename = L"404Mechty.png";
+            mBrush = Gdiplus::SolidBrush(Gdiplus::Color(255, 0, 255, 0));
             break;
-        default:
-            filename = L"404Andoris.png"; // blank, cannot travel either.
-            break;
-
         }
-        mBoxes = std::make_unique<Gdiplus::Image>(filename.c_str());
-        // initialise the back and front image of the card as dynamic memory. (we used the smarter pointer)
     }
 
     bool Puzzle::Cards::isClicked(int x, int y)
@@ -53,8 +52,12 @@ namespace Puzzle
         Gdiplus::Rect rct (mX, mY, mBoxes->GetWidth(), mBoxes->GetHeight()); // Rect function can verify the area of the windows.
         if (rct.Contains(x, y))
         {
-            // TODO::change the card colour
-            return true;
+            if (mIsEmpty)
+            {
+                return false;
+            }
+            Gdiplus::Rect rct(mX, mY, mWidth, mHeight);
+            return rct.Contains(x, y);
         }
 
         // Always false unless the card has been clicked.
@@ -64,19 +67,8 @@ namespace Puzzle
     // must required for redrawing the boxes.
     void Puzzle::Cards::Draw(Gdiplus::Graphics& graphics)
     {
-        if (isFront)
-        {
-            graphics.DrawImage(
-                mBoxes.get(), mX, mY, mBoxes->GetWidth(), mBoxes->GetHeight());
-        }
-        else
-        {
-            graphics.DrawImage(
-                mBack.get(), mX, mY, mBack->GetWidth(), mBack->GetHeight());
-        }
-        // if it is front, draw the front image of the card.
-
-        // otherwise, draw the back image of the card.
+        Gdiplus::Rect rect (mX, mY, mWidth, mHeight);
+        graphics.FillRectangle(&mBrush, rect);
     }
 
     void Cards::Invalidate()
@@ -88,6 +80,32 @@ namespace Puzzle
         InvalidateRect(mHwnd, &rect, false);
     }
 
+    void Cards::SetColour(Colour newColour)
+    {
+        if (!mIsEmpty)
+        {
+            mColour = newColour;
+            switch (mColour)
+            {
+            case Colour::Yellow:
+                mBrush.SetColor(Gdiplus::Color(255, 255, 255, 0));
+                break;
+
+            case Colour::Red:
+                mBrush.SetColor(Gdiplus::Color(255, 255, 0, 0));
+                  break;
+
+            case Colour::Blue:
+                mBrush.SetColor(Gdiplus::Color(255, 0, 0, 255));
+                break;
+
+            case Colour::Green:
+                mBrush.SetColor(Gdiplus::Color(255, 0, 255, 0));\
+                break;
+            }
+        }
+
+    }
 }
 
 

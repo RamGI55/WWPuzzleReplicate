@@ -41,11 +41,17 @@ namespace Puzzle
         // check if it is front.
         bool isFront; // ?
         Colour mColour; // Colours
+        bool mIsEmpty {false};
+        int mWidth {150};
+        int mHeight {150};
+        Gdiplus::SolidBrush mBrush;
+
 
     public:
         // Constructor of the card - Type, x, y
-        Cards(HWND hwnd, int index, Colour type, int x, int y);
+        Cards(HWND hwnd, int index, Colour type, int x, int y, bool isEmpty = false);
         // bool for checking it is clicked or not.
+        Cards() = default;
         bool isClicked(int x, int y);
         // drawing the card
         void Draw(Gdiplus::Graphics& graphics);
@@ -53,8 +59,11 @@ namespace Puzzle
         void Invalidate();
 
         Colour GetColour() {return mColour;}
-        
+        void SetColour(Colour newColour);
         int GetIndex() {return mIndex;}
+        bool IsEmpty() const {return mIsEmpty;}
+        void SetEmpty(bool isEmpty) {mIsEmpty = isEmpty;}
+        bool isSaved;
     };
 }
 
