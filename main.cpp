@@ -1,6 +1,6 @@
 
-#include <complex>
 #include <Windows.h>
+#include <complex>
 #include <sstream>
 
 #include "GameLogic.h"
@@ -11,17 +11,11 @@ using namespace Gdiplus;
 
 const wchar_t gClassName[]= L"MyWindowsClass";
 
-Puzzle::GameLogic gLogic;
 
 LRESULT CALLBACK WindowProc(
     HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-int WINAPI WinMain(
-   _In_ HINSTANCE hInstance,
-   _In_opt_ HINSTANCE hPrevInstance,
-   _In_ LPSTR     lpCmdLine,
-   _In_ int       nCmdShow
-)
+Puzzle::GameLogic gLogic;
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
@@ -38,7 +32,7 @@ int WINAPI WinMain(
 
     // initialising the windows.
     wc.style = CS_HREDRAW | CS_VREDRAW; // redraw when the window is moved.
-    wc.lpszClassName = gClassName;
+    wc.lpszClassName = reinterpret_cast<LPCSTR>(gClassName);
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor (NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
@@ -60,13 +54,13 @@ int WINAPI WinMain(
     // Generate the windows
     hWnd = CreateWindowEx(
         WS_EX_COMPOSITED,
-        gClassName,
+        reinterpret_cast<LPCSTR>(gClassName),
         reinterpret_cast<LPCSTR>(L"Wuthering Waves Puzzle"),
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        wr.right - wr.left,
-        wr.bottom - wr.top,
+        1920,
+        1080,
         NULL,
         NULL,
         hInstance,
@@ -94,7 +88,7 @@ int WINAPI WinMain(
 
     gLogic.Release();
     Gdiplus::GdiplusShutdown(gdiplusToken);
-    return static_cast<int>(msg.wParam);
+    return 0;
 }
 
 // get the text with the font in the window.
@@ -103,17 +97,9 @@ void OnPaint (HWND hwnd)
     HDC hdc;
     PAINTSTRUCT ps;
     hdc = BeginPaint(hwnd, &ps);
+
     Gdiplus::Graphics graphics (hdc);
-
     gLogic.Draw(graphics);
-    EndPaint(hwnd, &ps);
-}
-
-// get the shiroko.jpg file and display it on the window.
-void GetPic (HWND hwnd)
-{
-    HDC hdc;
-    PAINTSTRUCT ps;
 
     EndPaint(hwnd, &ps);
 }

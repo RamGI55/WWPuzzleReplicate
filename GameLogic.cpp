@@ -15,27 +15,33 @@
 #include <random>
 #include <stack>
 
+Puzzle::Colour Puzzle::GameLogic::mSavedColour = Colour::Yellow;
 namespace Puzzle
 {
+
     void GameLogic::Init(HWND hwnd)
     {
+        mHwnd = hwnd;
         CreateCard();
         _mClickCount = 10;
     }
 
     void GameLogic::Release()
     {
-        mDeck.clear();
-
+        _mClickCount = 0;
+        mpSelectedCard = nullptr;
     }
 
     void GameLogic::Draw(Gdiplus::Graphics& graphics)
     {
         // graphics.DrawImage(mBackground.get(), 0, 0, mBackground->GetWidth(), mBackground->GetHeight());
 
-        for (auto& cards: mDeck)
+        for (int row = 0; row < BOARD_ROWS; row++)
         {
-            cards.Draw(graphics);
+            for (int col = 0; col < BOARD_COLS; col++)
+            {
+                mDeck[row][col].Draw(graphics);
+            }
         }
 
         Gdiplus::PointF pos(1300.f, 20.f);
@@ -69,7 +75,7 @@ namespace Puzzle
             if (ClickedRow =! -1)
                 break;
         }
-       if (ClickedRow == -1 || _mClickCount < = 0 || mDeck[ClickedRow][ClickedCol].IsEmpty())
+       if (ClickedRow == -1 || _mClickCount <= 0 || mDeck[ClickedRow][ClickedCol].IsEmpty())
        {
            return;
        }
@@ -105,7 +111,7 @@ namespace Puzzle
 
         RECT CountRect = {
         static_cast<LONG>(mCountRect.X), static_cast<LONG>(mCountRect.Y),
-        static_cast<LONG>(mCountRect.X+mCountRect.Width), static_cast<LONG>(mCountRect.Y+mCountRect.Height)}
+        static_cast<LONG>(mCountRect.X+mCountRect.Width), static_cast<LONG>(mCountRect.Y+mCountRect.Height)};
         InvalidateRect(mHwnd, &CountRect, FALSE);
     }
 
@@ -141,6 +147,7 @@ namespace Puzzle
                 }
             }
         }
+        return false;
     }
 
     void GameLogic::Reset()
@@ -203,6 +210,7 @@ namespace Puzzle
             }
         }
 
+
         std::mt19937 rng (std::random_device{}());
 
        // define the tetris like shapes and randomly distribute
@@ -227,7 +235,7 @@ namespace Puzzle
         };
 
         int numShapesToPlace = 10; // how much of the block you'd like to place in the map?
-        for (int i = 0 ; i < numShapesToPlace; i ++ )
+        for (int i = 0 ; i < numShapesToPlace; i++)
         {
             int ShapeIndex = rng()% tetrisShapes.size();
             auto& shape = tetrisShapes[ShapeIndex];

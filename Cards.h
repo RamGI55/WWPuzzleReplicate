@@ -44,14 +44,14 @@ namespace Puzzle
         bool mIsEmpty {false};
         int mWidth {150};
         int mHeight {150};
-        Gdiplus::SolidBrush mBrush;
-
+        std::unique_ptr<Gdiplus::SolidBrush> mBrush;
 
     public:
         // Constructor of the card - Type, x, y
         Cards(HWND hwnd, int index, Colour type, int x, int y, bool isEmpty = false);
-        // bool for checking it is clicked or not.
-        Cards() = default;
+        Cards()
+            : mHwnd(nullptr), mIndex(0), mX(0), mY(0), isFront(false), mIsEmpty(true),
+              mBrush(std::make_unique<Gdiplus::SolidBrush>(Gdiplus::Color(255, 128, 128, 128))) {}
         bool isClicked(int x, int y);
         // drawing the card
         void Draw(Gdiplus::Graphics& graphics);

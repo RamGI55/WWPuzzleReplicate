@@ -37,10 +37,10 @@ namespace Puzzle
         // container of the cards.
         Cards mDeck[BOARD_ROWS][BOARD_COLS];
 
-        HWND mHwnd;
-        Colour mType;
-        int _mClickCount{};
-        Cards* mpSelectedCard{};
+        HWND mHwnd = nullptr;
+        Colour mType = Colour::Yellow;
+        int _mClickCount = 0 ;
+        Cards* mpSelectedCard = nullptr;
 
 
     private:
