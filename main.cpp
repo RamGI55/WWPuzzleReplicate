@@ -22,11 +22,23 @@ const wchar_t gClassName[]= L"MyWindowsClass";
 
 LRESULT CALLBACK WindowProc(
     HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+void OnPaint(HWND hwnd);
+
 Puzzle::GameLogic gLogic;
 
 void DebugMessage(const wchar_t* message) {
+    OutputDebugStringW(message);
+    OutputDebugStringW(L"\n");
 
 }
+
+void HandleError(const wchar_t* context, DWORD errorCode = GetLastError()) {
+    wchar_t errorMsg[512];
+    swprintf_s(errorMsg, 512, L"%s failed. Error code: %d", context, errorCode);
+    MessageBoxW(NULL, errorMsg, L"Error", MB_ICONERROR | MB_OK);
+    DebugMessage(errorMsg);
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;

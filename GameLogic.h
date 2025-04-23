@@ -6,7 +6,6 @@
 #define GAMELOGIC_H
 
 #include "Cards.h"
-#include <list>
 #include <memory>
 #include <vector>
 

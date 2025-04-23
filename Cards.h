@@ -8,7 +8,7 @@
 #pragma once
 
 #include <Windows.h>
-#include<gdiplus.h>
+#include <gdiplus.h>
 #include <memory>
 
 namespace Puzzle
@@ -22,10 +22,6 @@ namespace Puzzle
     };
     // Types of the colours
 
-    enum class Shapes
-    {
-
-    };
     class Cards
     {
     private:
@@ -50,7 +46,7 @@ namespace Puzzle
         Cards(HWND hwnd, int index, Colour type, int x, int y, bool isEmpty = false);
         Cards()
             : mHwnd(nullptr), mIndex(0), mX(0), mY(0), isFront(false), mIsEmpty(true),
-              mBrush(std::make_unique<Gdiplus::SolidBrush>(Gdiplus::Color(255, 128, 128, 128))) {}
+              mBrush(nullptr) {}
         bool isClicked(int x, int y);
         // drawing the card
         void Draw(Gdiplus::Graphics& graphics);

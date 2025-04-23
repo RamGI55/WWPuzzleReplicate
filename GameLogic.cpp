@@ -6,6 +6,13 @@
 //  3. otherwise player can reset or redo the process.
 //  4. Score system.
 //
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 
 #include "GameLogic.h"
 
@@ -44,17 +51,20 @@ namespace Puzzle
             }
         }
 
-        Gdiplus::PointF pos(1300.f, 20.f);
+        Gdiplus::PointF pos(1100.f, 20.f);
 
         Gdiplus::SolidBrush brush(Gdiplus::Color (255,79, 64));
-        Gdiplus::Font font (L"Microsoft Sans Serif", 20);
+        Gdiplus::FontFamily fontFamily(L"Arial");
+        Gdiplus::Font font (&fontFamily, 20, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
 
-        graphics.DrawString(L"Attempts Left: ", -1, &font, pos, &brush);
-        Gdiplus::StringFormat format;
+        if (font.IsAvailable()) {
+            graphics.DrawString(L"Attempts Left: ", -1, &font, pos, &brush);
 
-        format.SetAlignment(Gdiplus::StringAlignmentCenter);
-        format.SetAlignment(Gdiplus::StringAlignmentCenter);
-        graphics.DrawString(std::to_wstring(_mClickCount).c_str(), -1, &font, mCountRect, &format, &brush); // change to the attempts
+            Gdiplus::StringFormat format;
+            format.SetAlignment(Gdiplus::StringAlignmentCenter);
+            std::wstring attemptsText = std::to_wstring(_mClickCount);
+            graphics.DrawString(attemptsText.c_str(), -1, &font, mCountRect, &format, &brush);
+        }
 
     }
 
@@ -100,12 +110,12 @@ namespace Puzzle
 
         if (CheckVictory())
         {
-            MessageBox(mHwnd, reinterpret_cast<LPCSTR>(L"You've won!"), reinterpret_cast<LPCSTR>(L"Win!"), MB_OK);
+            MessageBoxW(mHwnd, L"You've won!", L"Win!", MB_OK);
             Reset();
         }
         else if (_mClickCount <= 0)
         {
-            MessageBox (mHwnd, reinterpret_cast<LPCSTR>(L"Out of moves! Try Again."), reinterpret_cast<LPCSTR>(L"Game Over"), MB_OK);
+            MessageBoxW(mHwnd, L"Out of moves! Try Again.", L"Game Over", MB_OK);
             Reset();
         }
 
